@@ -1,9 +1,9 @@
 from confluent_kafka import Consumer
-import redis
 import json
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad, pad
 import base64
+from redis_client import get_redis_connection  # Import shared Redis connection
 
 # Kafka Configuration
 KAFKA_BROKER = 'localhost:9092'
@@ -22,12 +22,8 @@ consumer.subscribe([KAFKA_TOPIC])
 # Encryption configuration
 encryption_key = bytes.fromhex("63663255767434797a59587252423657697151594131474749705a4766387644")  # 32 bytes (256-bit key)
 
-# Redis Configuration
-redis_client = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
-
-# Test Redis connection
-if redis_client.ping():
-    print("Connected to Redis!")
+# Get Redis connection from redis_client.py
+redis_client = get_redis_connection()
 
 # Encryption and Decryption Utilities
 def encrypt_patient_id(patient_id):
