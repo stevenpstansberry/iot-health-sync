@@ -22,10 +22,14 @@ while true; do
     "patient_id": "$patient_id",
     "heart_rate": $heart_rate,
     "oxygen": $oxygen,
-    "temperature": $temperature
+    "temperature": $temperature,
+    "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+    "data_source": "iot_simulator",
+    "message_id": "$(uuidgen)"
 }
 EOF
 )
+
 
     # Encryption key
     encryption_key="63663255767434797a59587252423657697151594131474749705a4766387644" 

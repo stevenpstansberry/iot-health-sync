@@ -5,6 +5,8 @@ import base64
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
+from datetime import datetime, timezone
+import uuid
 
 # Encryption configuration
 encryption_key = bytes.fromhex("63663255767434797a59587252423657697151594131474749705a4766387644")  # Hex-encoded key
@@ -44,18 +46,24 @@ while True:
             decrypted_data = unpad(cipher.decrypt(encrypted_bytes), AES.block_size).decode('utf-8')
             telemetry = json.loads(decrypted_data)
 
-            # Print decrypted telemetry data
-            print("Received Decrypted Data:", telemetry)
+            # Add metadata
+            telemetry["processing_timestamp"] = datetime.now(timezone.utc).isoformat()
+            telemetry["server_id"] = "iot-server-01"
+            telemetry["encryption_version"] = "AES-256-CBC-v1"
+            telemetry["message_id"] = telemetry.get("message_id", str(uuid.uuid4()))
 
             # Re-encrypt the data for Kafka
             new_iv = get_random_bytes(16)  # Generate a new random IV
             new_cipher = AES.new(encryption_key, AES.MODE_CBC, new_iv)
-            encrypted_for_kafka = base64.b64encode(new_iv + new_cipher.encrypt(pad(json.dumps(telemetry).encode('utf-8'), AES.block_size)))
+            payload = {**telemetry}  # Combine telemetry and metadata
+            encrypted_for_kafka = base64.b64encode(
+                new_iv + new_cipher.encrypt(pad(json.dumps(payload).encode('utf-8'), AES.block_size))
+            )
 
             # Forward encrypted data to Kafka
             producer.produce(
                 KAFKA_TOPIC,
-                key=str(telemetry.get('device_id', 'unknown')),
+                key=str(telemetry["device_id"]),
                 value=encrypted_for_kafka.decode('utf-8')
             )
             producer.flush()  # Ensure the message is delivered
