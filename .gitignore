@@ -3,3 +3,4 @@ notes.md
 todos.md
 overview.md
 backend/__pycache__/*
+backend/analysis/__pycache__/*

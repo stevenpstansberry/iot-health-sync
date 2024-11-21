@@ -4,7 +4,7 @@ import datetime
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad, pad
 import base64
-from redis_client import get_redis_connection  # Import shared Redis connection
+from redis_client import get_redis_connection  
 
 # Kafka Configuration
 KAFKA_BROKER = 'localhost:9092'
