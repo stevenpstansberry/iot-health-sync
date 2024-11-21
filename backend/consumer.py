@@ -32,6 +32,29 @@ def decrypt_message(encrypted_message):
     decrypted_data = unpad(cipher.decrypt(ciphertext), AES.block_size).decode('utf-8')
     return decrypted_data
 
+def process_telemetry(telemetry):
+    # Alerts based on telemetry data
+
+    # Heart Rate Alerts
+    if telemetry["heart_rate"] > 120:
+        print(f"CRITICAL ALERT: Very high heart rate detected for {telemetry['patient_name']}! ({telemetry['heart_rate']} bpm)")
+    elif telemetry["heart_rate"] > 100:
+        print(f"ALERT: High heart rate detected for {telemetry['patient_name']} ({telemetry['heart_rate']} bpm)!")
+    elif telemetry["heart_rate"] < 60:
+        print(f"ALERT: Low heart rate detected for {telemetry['patient_name']} ({telemetry['heart_rate']} bpm)!")
+
+    # Oxygen Level Alerts
+    if telemetry["oxygen"] < 85:
+        print(f"CRITICAL ALERT: Critical oxygen level detected for {telemetry['patient_name']}! ({telemetry['oxygen']}%)")
+    elif telemetry["oxygen"] < 90:
+        print(f"ALERT: Low oxygen level detected for {telemetry['patient_name']} ({telemetry['oxygen']}%)!")
+
+    # Temperature Alerts
+    if telemetry["temperature"] > 38:
+        print(f"ALERT: Fever detected for {telemetry['patient_name']}! ({telemetry['temperature']}°C)")
+    elif telemetry["temperature"] < 35:
+        print(f"ALERT: Hypothermia detected for {telemetry['patient_name']}! ({telemetry['temperature']}°C)")
+
 print(f"Subscribed to Kafka topic: {KAFKA_TOPIC}")
 
 while True:
@@ -49,12 +72,10 @@ while True:
 
         # Parse the JSON data
         telemetry = json.loads(decrypted_message)
-        print("Received and decrypted a message.")
+        print(f"Received telemetry from (Device ID: {telemetry['device_id']})")
 
-        # Process the telemetry (e.g., detect anomalies, store in DB)
-        # Example: Print a warning if heart rate exceeds a threshold
-        if telemetry["heart_rate"] > 100:
-            print("Warning: High heart rate detected!")
+        # Process the telemetry data for alerts
+        process_telemetry(telemetry)
 
     except Exception as e:
         print("Error processing message:", e)
