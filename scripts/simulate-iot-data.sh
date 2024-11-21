@@ -27,12 +27,20 @@ while true; do
 EOF
 )
 
-    # Encrypt the JSON payload
-    encryption_key="cF2Uvt4yzYXrRB6WiqQYA1GGIpZGf8vD" 
-    encrypted_data=$(echo -n "$json_data" | openssl enc -aes-256-cbc -a -salt -pass pass:$encryption_key)
+    # Encryption key
+    encryption_key="63663255767434797a59587252423657697151594131474749705a4766387644" 
 
-    # Send encrypted data to the server
-    echo "$encrypted_data" | nc localhost 9999
+    # Generate a random IV (16 bytes in hex)
+    iv=$(openssl rand -hex 16)
+
+    # Encrypt the JSON payload with OpenSSL
+    encrypted_data=$(printf '%s' "$json_data" | openssl enc -aes-256-cbc -a -K $encryption_key -iv $iv | tr -d '\n')
+
+    # Combine IV and encrypted data
+    combined_data="$iv:$encrypted_data"
+
+    # Send the combined data to the server
+    echo "$combined_data" | nc localhost 9999
 
     # Wait before sending the next message
     sleep 1
