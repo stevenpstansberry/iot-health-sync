@@ -49,12 +49,12 @@ while True:
 
         # Parse the JSON data
         telemetry = json.loads(decrypted_message)
-        print("Decrypted Telemetry:", telemetry)
+        print("Received and decrypted a message.")
 
         # Process the telemetry (e.g., detect anomalies, store in DB)
         # Example: Print a warning if heart rate exceeds a threshold
         if telemetry["heart_rate"] > 100:
-            print(f"Warning: High heart rate detected for {telemetry['patient_name']}!")
+            print("Warning: High heart rate detected!")
 
     except Exception as e:
         print("Error processing message:", e)
