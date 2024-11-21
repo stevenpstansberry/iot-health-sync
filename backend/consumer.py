@@ -2,7 +2,7 @@ from confluent_kafka import Consumer
 import redis
 import json
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
+from Crypto.Util.Padding import unpad, pad
 import base64
 
 # Kafka Configuration
@@ -20,7 +20,7 @@ consumer = Consumer(conf)
 consumer.subscribe([KAFKA_TOPIC])
 
 # Encryption configuration
-encryption_key = bytes.fromhex("63663255767434797a59587252423657697151594131474749705a4766387644")  # Hex-encoded key
+encryption_key = bytes.fromhex("63663255767434797a59587252423657697151594131474749705a4766387644")  # 32 bytes (256-bit key)
 
 # Redis Configuration
 redis_client = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
@@ -28,6 +28,19 @@ redis_client = redis.StrictRedis(host='localhost', port=6379, decode_responses=T
 # Test Redis connection
 if redis_client.ping():
     print("Connected to Redis!")
+
+# Encryption and Decryption Utilities
+def encrypt_patient_id(patient_id):
+    cipher = AES.new(encryption_key, AES.MODE_ECB)
+    padded_id = pad(patient_id.encode('utf-8'), AES.block_size)
+    encrypted_bytes = cipher.encrypt(padded_id)
+    return base64.b64encode(encrypted_bytes).decode('utf-8')
+
+def decrypt_patient_id(encrypted_id):
+    cipher = AES.new(encryption_key, AES.MODE_ECB)
+    encrypted_bytes = base64.b64decode(encrypted_id)
+    decrypted_id = unpad(cipher.decrypt(encrypted_bytes), AES.block_size)
+    return decrypted_id.decode('utf-8')
 
 def decrypt_message(encrypted_message):
     # Decode Base64 message
@@ -41,9 +54,9 @@ def decrypt_message(encrypted_message):
     return decrypted_data
 
 def process_telemetry(telemetry):
-    # Key for this patient's anomalies
-    patient_id = telemetry["patient_id"]
-    redis_key = f"anomalies:{patient_id}"
+    # Encrypt the patient ID
+    encrypted_patient_id = encrypt_patient_id(telemetry["patient_id"])
+    redis_key = f"anomalies:{encrypted_patient_id}"
 
     # Alerts based on telemetry data
     if telemetry["heart_rate"] > 120:
