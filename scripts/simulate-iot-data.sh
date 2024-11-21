@@ -9,10 +9,28 @@ while true; do
     # Generate a random patient ID
     patient_id=$((1000 + RANDOM % 9000))
 
-    # Generate telemetry data
+    # Generate normal telemetry data
     heart_rate=$((60 + RANDOM % 20))
     oxygen=$((90 + RANDOM % 10))
     temperature=$((36 + RANDOM % 2))
+
+    # Occasionally send anomalous data (20% chance)
+    if (( RANDOM % 100 < 20 )); then
+        case $(( RANDOM % 3 )) in
+            0)
+                # High heart rate
+                heart_rate=$((120 + RANDOM % 20))
+                ;;
+            1)
+                # Low oxygen level
+                oxygen=$((80 + RANDOM % 10))
+                ;;
+            2)
+                # Fever
+                temperature=$((39 + RANDOM % 2))
+                ;;
+        esac
+    fi
 
     # Create JSON payload
     json_data=$(cat <<EOF
@@ -29,7 +47,6 @@ while true; do
 }
 EOF
 )
-
 
     # Encryption key
     encryption_key="63663255767434797a59587252423657697151594131474749705a4766387644" 
