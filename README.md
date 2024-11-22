@@ -2,7 +2,7 @@
 
 ## Objective
 
-This project focuses on designing and deploying a scalable, secure IoT system for real-time monitoring of patient vitals such as heart rate, oxygen saturation, and temperature. The system incorporates Kafka for data ingestion, Redis for low-latency storage, and adheres to FHIR standards for healthcare interoperability. Enhanced with Unix networking tools, it demonstrates proficiency in IoT systems, networking, and system-level monitoring.
+This project focuses on designing and deploying a scalable, secure IoT system for real-time monitoring of patient vitals such as heart rate, oxygen saturation, and temperature. The system incorporates Kafka for data ingestion, Redis for low-latency storage, and adheres to FHIR standards for healthcare interoperability. Enhanced with Linux-based tools and AWS services, it demonstrates proficiency in IoT systems, cloud orchestration, networking, and system-level monitoring.
 
 ---
 
@@ -17,23 +17,25 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 - Formats telemetry data into FHIR-compliant JSON for integration with healthcare systems like EHRs (Electronic Health Records).
 
-### Unix-Based Simulation and Monitoring
+### Linux-Based Simulation and Monitoring
 
-- Utilizes Bash scripts and netcat for IoT device simulation, sending telemetry via TCP sockets.
-- Monitors Kafka, Redis, and network traffic with Unix tools such as `tcpdump`, `htop`, and `netstat`.
+- Utilizes Linux Bash scripts and netcat for IoT device simulation, sending telemetry via TCP sockets.
+- Monitors Kafka, Redis, and network traffic with Linux tools such as `tcpdump`, `htop`, and `netstat`.
 
-### Secure Networking
+### AWS-Orchestrated Secure Networking
 
+- AWS Lambda functions trigger the orchestration of compute jobs on EC2 instances for processing heavy workloads.
 - Implements firewall rules (`iptables`) and SSL/TLS encryption to secure data transmission.
 - Enforces data encryption at rest and in transit using the AES-256 encryption algorithm.
 
 ### Fast Data Access and Archiving
 
 - Leverages Redis for caching recent vitals and Amazon S3 for archiving historical data.
+- Employs AWS S3 Lambda Access Points to strip PII from data before long-term storage.
 
 ### System Health Monitoring
 
-- Cloudwatch monitors output statements.
+- CloudWatch monitors system metrics and application logs.
 
 ---
 
@@ -41,7 +43,7 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### IoT Devices
 
-- Simulated devices (via Unix scripts) send patient vitals (e.g., heart rate, oxygen saturation) over TCP sockets.
+- Simulated devices (via Linux scripts) send patient vitals (e.g., heart rate, oxygen saturation) over TCP sockets.
 
 ### Networking Layer
 
@@ -59,6 +61,10 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 - **Redis**: Caches live patient vitals for quick dashboard access.
 - **Amazon S3**: Archives historical data for compliance and analytics with AES-256 encryption for data at rest.
 
+### Compute Orchestration
+
+- AWS Lambda functions initiate and manage processing jobs on EC2 instances to handle intensive workloads like real-time anomaly detection and data formatting.
+
 ### APIs
 
 - Backend services expose:
@@ -66,7 +72,7 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### System Monitoring
 
-- Unix tools (`tcpdump`, `netstat`) debug and optimize networking and data flow.
+- Linux tools (`tcpdump`, `netstat`) and AWS CloudWatch debug and optimize networking and data flow.
 
 ### Security
 
@@ -80,12 +86,18 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### IoT Simulation
 
-- Unix scripts simulate telemetry data (e.g., `heart_rate=78, oxygen=95%`) alongside patient information and transmit it via TCP sockets.
+- Linux scripts simulate telemetry data (e.g., `heart_rate=78, oxygen=95%`) alongside patient information and transmit it via TCP sockets.
 
 ### Data Ingestion
 
-- Backend socket server validates data and forwards it to Kafka topics.
+- A Python-based backend socket server validates data and forwards it to Kafka topics.
 - Kafka Streams detects anomalies and formats data into FHIR/HIPAA-compliant JSON.
+
+### Compute and Job Orchestration
+
+- AWS Lambda functions trigger EC2 instances for compute-intensive tasks, such as:
+  - Processing Kafka Stream output.
+  - Generating patient trends and real-time alerts.
 
 ### Data Storage
 
@@ -98,7 +110,7 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### System Monitoring
 
-- Unix tools (`tcpdump`, `htop`) debug and optimize data flow.
+- Linux tools (`tcpdump`, `htop`) and AWS CloudWatch monitor system performance and debug potential bottlenecks.
 
 ---
 
@@ -106,7 +118,7 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### IoT Simulation
 
-- Bash scripts, `netcat`, and cron jobs for periodic data generation.
+- Linux Bash scripts, `netcat`, and cron jobs for periodic data generation.
 
 ### Data Pipeline
 
@@ -122,6 +134,10 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 - The S3 Lambda Access Point ensures that data stripped of PII is archived in compliance with privacy regulations.
 
+### Compute Orchestration
+
+- AWS Lambda functions to trigger job execution on EC2 instances for scalability and efficiency.
+
 ### Backend
 
 - Spring Boot for REST APIs and cron job orchestration.
@@ -133,6 +149,6 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### System Monitoring
 
-- Unix tools (`tcpdump`, `netstat`, `htop`).
+- Linux tools (`tcpdump`, `netstat`, `htop`) and AWS CloudWatch.
 
 ---
