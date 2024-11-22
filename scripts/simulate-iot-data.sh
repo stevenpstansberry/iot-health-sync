@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Load environment variables from the .env file in the directory above
+source ../.env
+
 # Load mock patients from a file
 PATIENTS_FILE="mock_patients.txt"
 
@@ -60,8 +63,8 @@ while [[ $SECONDS -lt $END_TIME ]]; do
 EOF
 )
 
-    # Encryption key
-    encryption_key="63663255767434797a59587252423657697151594131474749705a4766387644" 
+    # Encryption key from .env file
+    encryption_key=$ENCRYPTION_KEY
 
     # Generate a random IV (16 bytes in hex)
     iv=$(openssl rand -hex 16)

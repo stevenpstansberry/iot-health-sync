@@ -36,7 +36,7 @@ s3_client = boto3.client(
 S3_BUCKET_NAME = 'health-data-raw'
 
 # Encryption configuration
-encryption_key = bytes.fromhex("63663255767434797a59587252423657697151594131474749705a4766387644")  # 32 bytes (256-bit key)
+encryption_key = bytes.fromhex(os.getenv("ENCRYPTION_KEY"))  # Hex-encoded key
 
 # Get Redis connection from redis_client.py
 redis_client = get_redis_connection()
