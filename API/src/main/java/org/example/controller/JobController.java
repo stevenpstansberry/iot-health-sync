@@ -54,16 +54,28 @@ public class JobController {
     }
 
     private String generateUserDataScript() {
-        // Create a bash script to set up and run the simulation
+        // Bash script to start Zookeeper, Kafka, Redis, and application scripts
         String script = "#!/bin/bash\n" +
-                "sudo apt update && sudo apt install -y python3-pip nc\n" +
+                "# Start Zookeeper\n" +
+                "nohup /opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties > /var/log/zookeeper.log 2>&1 &\n" +
+                "sleep 5\n" +  // Wait for Zookeeper to start\n" +
+                "# Start Kafka\n" +
+                "nohup /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties > /var/log/kafka.log 2>&1 &\n" +
+                "sleep 5\n" +  // Wait for Kafka to start\n" +
+                "# Start Redis\n" +
+                "sudo systemctl start redis-server\n" +
+                "sleep 2\n" +  // Wait for Redis to start\n" +
+                "# Run the IoT simulation script\n" +
                 "cd /home/ubuntu/scripts\n" +
                 "bash simulate-iot-data.sh &\n" +
+                "# Run backend Python scripts\n" +
                 "cd /home/ubuntu/backend\n" +
                 "python3 server.py &\n" +
                 "python3 consumer.py &\n" +
-                "sleep 1800\n" +  // Wait for 30 minutes
-                "sudo shutdown -h now\n"; // Shutdown the EC2 instance
+                "# Wait 30 minutes\n" +
+                "sleep 1800\n" +
+                "# Shut down EC2 instance\n" +
+                "sudo shutdown -h now\n";
 
         // Encode the script to Base64 (required for EC2 User Data)
         return Base64.getEncoder().encodeToString(script.getBytes());
