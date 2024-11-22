@@ -140,19 +140,3 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
    - Socket-based communication, TLS encryption, and firewall rules.
 
 ---
-
-## Why This Project Stands Out
-
-### Multi-Disciplinary Skill Set
-
-- Combines IoT, networking, real-time processing, Unix, and web development.
-
-### Real-World Relevance
-
-- Adheres to healthcare standards (FHIR, HIPAA), ensuring deployability in real-world environments.
-
-### Competitive Edge
-
-- Unix and networking skills add a unique dimension to traditional IoT projects.
-
----
