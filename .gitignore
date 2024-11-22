@@ -4,3 +4,6 @@ todos.md
 overview.md
 backend/__pycache__/*
 backend/analysis/__pycache__/*
+backend/lambda/__pycache__/*
+backend/.DS_Store
+.DS_Store
