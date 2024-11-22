@@ -5,11 +5,18 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad, pad
 import base64
 from redis_client import get_redis_connection  
+import boto3
+import os
+from dotenv import load_dotenv
+
 
 # Kafka Configuration
 KAFKA_BROKER = 'localhost:9092'
 KAFKA_TOPIC = 'iot_telemetry'
 GROUP_ID = 'iot-consumer-group'
+
+# Load environment variables from .env file
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 conf = {
     'bootstrap.servers': KAFKA_BROKER,
@@ -20,11 +27,30 @@ conf = {
 consumer = Consumer(conf)
 consumer.subscribe([KAFKA_TOPIC])
 
+# S3 Configuration
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_KEY')
+)
+S3_BUCKET_NAME = 'health-data-raw'
+
 # Encryption configuration
 encryption_key = bytes.fromhex("63663255767434797a59587252423657697151594131474749705a4766387644")  # 32 bytes (256-bit key)
 
 # Get Redis connection from redis_client.py
 redis_client = get_redis_connection()
+
+def forward_to_s3(encrypted_data, timestamp, device_id):
+    """Send encrypted data to S3."""
+    file_name = f"raw_data/{timestamp}_{device_id}.enc"
+    s3_client.put_object(
+        Bucket=S3_BUCKET_NAME,
+        Key=file_name,
+        Body=encrypted_data,
+        ContentType='application/octet-stream'
+    )
+    print(f"Encrypted data forwarded to S3: {file_name}")
 
 # Encryption and Decryption Utilities
 def encrypt_patient_id(patient_id):
@@ -115,7 +141,11 @@ while True:
         # Process the telemetry data for alerts and forward to Redis
         process_telemetry(telemetry)
 
+        timestamp = datetime.datetime.utcnow().isoformat()
+        device_id = telemetry["device_id"]
+
+        forward_to_s3(encrypted_message,timestamp, device_id)
     except Exception as e:
-        print("Error processing message:", e)
+        print("Error processing message:", timestamp,)
 
 consumer.close()
