@@ -10,20 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
 public class ApiController {
 
-    @GetMapping("/hello")
+    @RequestMapping("/api/hello")
     public String hello() {
         return "Hello, Spring Boot!";
     }
 
-    @GetMapping("/health")
-    public ResponseEntity<Map<String, Object>> healthCheck() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "UP");
-        response.put("timestamp", System.currentTimeMillis());
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 }
