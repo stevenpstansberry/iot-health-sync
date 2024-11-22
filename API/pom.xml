@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
@@ -12,6 +13,7 @@
     <name>Serverless Spring Boot 3 API</name>
     <url>https://github.com/aws/serverless-java-container</url>
 
+    <!-- Parent POM -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -19,11 +21,43 @@
     </parent>
 
     <properties>
-        <java.version>17</java.version>
-        <junit.version>5.10.2</junit.version>
+        <java.version>21</java.version>
     </properties>
 
+    <!-- Add repositories -->
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+    <!-- Dependency Management -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- AWS SDK BOM -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>2.20.1</version>
+                <type>pom</type>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- JUnit BOM -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.10.0</version> <!-- Updated to a valid version -->
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- Dependencies -->
     <dependencies>
+        <!-- AWS Serverless Java Container -->
         <dependency>
             <groupId>com.amazonaws.serverless</groupId>
             <artifactId>aws-serverless-java-container-springboot3</artifactId>
@@ -37,13 +71,15 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+
+        <!-- AWS SDK for EC2 -->
         <dependency>
-            <groupId>org.apache.httpcomponents.client5</groupId>
-            <artifactId>httpclient5</artifactId>
-            <version>5.2.1</version>
-            <scope>test</scope>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ec2</artifactId>
+            <!-- Version is managed by the BOM -->
         </dependency>
 
+        <!-- Spring Boot Starter Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -55,6 +91,8 @@
             </exclusions>
         </dependency>
 
+
+        <!-- JUnit Jupiter -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -62,27 +100,17 @@
         </dependency>
     </dependencies>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>5.10.2</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+    <!-- Profiles -->
     <profiles>
         <profile>
             <id>shaded-jar</id>
             <build>
                 <plugins>
+                    <!-- Maven Shade Plugin -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-shade-plugin</artifactId>
-                        <version>3.5.3</version>
+                        <version>3.5.0</version> <!-- Updated to a valid version -->
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
@@ -105,6 +133,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>assembly-zip</id>
             <activation>
@@ -112,7 +141,7 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- don't build a jar, we'll use the classes dir -->
+                    <!-- Skip default jar -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
@@ -124,6 +153,8 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <!-- Skip install plugin -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-install-plugin</artifactId>
@@ -132,7 +163,8 @@
                             <skip>true</skip>
                         </configuration>
                     </plugin>
-                    <!-- select and copy only runtime dependencies to a temporary lib folder -->
+
+                    <!-- Copy dependencies -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
@@ -151,6 +183,8 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <!-- Assembly Plugin -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
