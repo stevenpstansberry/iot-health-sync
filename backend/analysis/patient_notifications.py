@@ -22,5 +22,9 @@ def patient_notifications(encrypted_patient_id):
 
     print(f"Patient {decrypted_patient_id} Notification:")
     for anomaly, value in anomalies.items():
-        anomaly_type, timestamp = anomaly.split(":")
-        print(f"  {anomaly_type} at {timestamp}: {value}")
+        try:
+            anomaly_type, timestamp = anomaly.split(":", 1)  # Split at the first colon only
+            print(f"  {anomaly_type} at {timestamp}: {value}")
+        except ValueError:
+            print(f"  Malformed anomaly key: {anomaly} -> {value}")
+
