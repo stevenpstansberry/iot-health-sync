@@ -1,13 +1,14 @@
-# Load mock names from a file
-NAMES_FILE="mock_names.txt"
+# Load mock patients from a file
+PATIENTS_FILE="mock_patients.txt"
 
 # Generate and send encrypted telemetry data
 while true; do
-    # Pick a random name from the file
-    name=$(shuf -n 1 $NAMES_FILE)
+    # Pick a random line from the file
+    line=$(shuf -n 1 $PATIENTS_FILE)
 
-    # Generate a random patient ID
-    patient_id=$((1000 + RANDOM % 9000))
+    # Extract patient name and ID
+    name=$(echo $line | cut -d ',' -f 1)
+    patient_id=$(echo $line | cut -d ',' -f 2)
 
     # Generate normal telemetry data
     heart_rate=$((60 + RANDOM % 20))
