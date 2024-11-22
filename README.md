@@ -19,7 +19,7 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### Unix-Based Simulation and Monitoring
 
-- Utilizes Bash scripts and netcat for IoT device simulation, sending telemetry via TCP/UDP sockets.
+- Utilizes Bash scripts and netcat for IoT device simulation, sending telemetry via TCP sockets.
 - Monitors Kafka, Redis, and network traffic with Unix tools such as `tcpdump`, `htop`, and `netstat`.
 
 ### Secure Networking
