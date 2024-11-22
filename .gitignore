@@ -7,3 +7,10 @@ backend/analysis/__pycache__/*
 backend/lambda/__pycache__/*
 backend/.DS_Store
 .DS_Store
+Api/target/*
+Api/.gradle/*
+Api/gradlew
+Api/build.gradle
+Api/gradlew.bat
+Api/.idea/*
+Api/gradle/*
