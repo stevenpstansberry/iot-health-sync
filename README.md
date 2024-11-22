@@ -1,4 +1,4 @@
-# Iot Health Sync
+# IoT Health Sync
 
 ## Objective
 
@@ -25,6 +25,7 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 ### Secure Networking
 
 - Implements firewall rules (`iptables`) and SSL/TLS encryption to secure data transmission.
+- Enforces data encryption at rest and in transit using the AES-256 encryption algorithm.
 
 ### Fast Data Access and Archiving
 
@@ -56,7 +57,7 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 ### Data Storage
 
 - **Redis**: Caches live patient vitals for quick dashboard access.
-- **Amazon S3**: Archives historical data for compliance and analytics.
+- **Amazon S3**: Archives historical data for compliance and analytics with AES-256 encryption for data at rest.
 
 ### APIs
 
@@ -69,8 +70,9 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### Security
 
-- SSL encryption ensures secure data transfer.
+- SSL/TLS encryption ensures secure data transfer with AES-256 encryption applied to transmitted data.
 - Firewalls (`iptables`) restrict access to Kafka and Redis.
+- Data at rest in both Redis and Amazon S3 is encrypted using AES-256, ensuring compliance with industry security standards.
 
 ---
 
@@ -78,7 +80,7 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### IoT Simulation
 
-- Unix scripts simulate telemetry data (e.g., `heart_rate=78, oxygen=95%`) and transmit it via TCP sockets.
+- Unix scripts simulate telemetry data (e.g., `heart_rate=78, oxygen=95%`) alongside patient information and transmit it via TCP sockets.
 
 ### Data Ingestion
 
@@ -88,6 +90,11 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 ### Data Storage
 
 - Redis caches real-time data and anomalies before forwarding to Amazon S3 for long-term archiving.
+
+### Data Encryption
+
+- **Data in Transit**: Secured with SSL/TLS, ensuring that all communication between IoT devices, the backend, and storage is encrypted using the AES-256 algorithm.
+- **Data at Rest**: Redis and Amazon S3 use AES-256 encryption to protect sensitive information stored within the system.
 
 ### System Monitoring
 
@@ -111,32 +118,21 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### Storage
 
-- Redis for low-latency access of anamolies and Amazon S3 for long term archiving.
+- Redis for low-latency access to anomalies and Amazon S3 for long-term archiving.
 
 - The S3 Lambda Access Point ensures that data stripped of PII is archived in compliance with privacy regulations.
 
 ### Backend
 
-- Spring Boot for REST APIs and cron job orchestration
+- Spring Boot for REST APIs and cron job orchestration.
+
+### Security and Encryption
+
+- AES-256 encryption for data at rest and in transit.
+- SSL/TLS protocols for secure communication.
 
 ### System Monitoring
 
 - Unix tools (`tcpdump`, `netstat`, `htop`).
-
----
-
-## Deliverables
-
-1. **Fully Functional IoT Pipeline**
-
-   - Real-time telemetry processing with anomaly detection.
-   - FHIR-compliant JSON data formatting.
-
-2. **Interactive Dashboard**
-
-   - Real-time visualization of patient data, alerts, and trends.
-
-3. **Networking and Security**
-   - Socket-based communication, TLS encryption, and firewall rules.
 
 ---
