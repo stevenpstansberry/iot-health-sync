@@ -23,12 +23,10 @@ encryption_key = bytes.fromhex("63663255767434797a595872524236576971515941314747
 def decrypt_data(encrypted_data):
     """Decrypt AES-256 encrypted data."""
     try:
-        print(f"Starting decryption. Encrypted data length: {len(encrypted_data)}")
+        print(f"Starting decryption process...")
         encrypted_bytes = base64.b64decode(encrypted_data)
         iv = encrypted_bytes[:16]  # Extract IV (first 16 bytes)
         ciphertext = encrypted_bytes[16:]  
-        print(f"Extracted IV: {iv.hex()}")
-        print(f"Ciphertext length: {len(ciphertext)}")
 
         cipher = AES.new(encryption_key, AES.MODE_CBC, iv)
         decrypted_bytes = unpad(cipher.decrypt(ciphertext), AES.block_size)
@@ -42,41 +40,39 @@ def decrypt_data(encrypted_data):
 def lambda_handler(event, context):
     try:
         print("Lambda function triggered")
-        print(f"Event data received: {json.dumps(event, indent=4)}")
 
         # Get the uploaded file details
         record = event['Records'][0]
         bucket = record['s3']['bucket']['name']
         key = record['s3']['object']['key']
-        print(f"File received: bucket={bucket}, key={key}")
+        print(f"Processing file from bucket '{bucket}' with key '{key}'")
 
         # Fetch the raw object from S3
-        print(f"Fetching object from S3: bucket={bucket}, key={key}")
+        print("Fetching object from S3...")
         raw_object = s3_client.get_object(Bucket=bucket, Key=key)
         encrypted_data = raw_object['Body'].read().decode('utf-8')
-        print(f"Encrypted data fetched. Data length: {len(encrypted_data)}")
+        print("Encrypted data fetched successfully")
 
         # Decrypt the raw data
         decrypted_data = decrypt_data(encrypted_data)
-        print(f"Decrypted data: {decrypted_data}")
 
         # Parse JSON and remove PII
         telemetry = json.loads(decrypted_data)
-        print(f"Parsed telemetry data: {telemetry}")
+        print("Telemetry data parsed successfully")
         cleaned_data = {k: v for k, v in telemetry.items() if k not in ["patient_name", "patient_id"]}
-        print(f"Cleaned telemetry data: {cleaned_data}")
+        print("PII removed from telemetry data")
 
         # Save cleaned data to another S3 bucket
         cleaned_bucket = 'health-data-clean'
         cleaned_key = key.replace('raw_data/', 'cleaned_data/').replace('.enc', '.json')
-        print(f"Uploading cleaned data to S3: bucket={cleaned_bucket}, key={cleaned_key}")
+        print(f"Uploading cleaned data to bucket '{cleaned_bucket}' with key '{cleaned_key}'")
         s3_client.put_object(
             Bucket=cleaned_bucket,
             Key=cleaned_key,
             Body=json.dumps(cleaned_data),
             ContentType='application/json'
         )
-        print(f"Cleaned data saved to {cleaned_bucket}/{cleaned_key}")
+        print(f"Cleaned data saved successfully to '{cleaned_bucket}/{cleaned_key}'")
 
     except Exception as e:
         print(f"Error in lambda_handler: {e}")
@@ -93,14 +89,14 @@ if __name__ == "__main__":
                         "name": "health-data-raw"
                     },
                     "object": {
-                        "key": "raw_data/2024-11-22T01:49:53.944153_device1.enc"
+                        "key": "raw_data/sample.enc"
                     }
                 }
             }
         ]
     }
 
-    # Mock context (can be an empty object if not used)
+    # Mock context 
     mock_context = {}
 
     # Call lambda_handler directly
