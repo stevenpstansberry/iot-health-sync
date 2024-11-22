@@ -1,8 +1,19 @@
+#!/bin/bash
+
 # Load mock patients from a file
 PATIENTS_FILE="mock_patients.txt"
 
+# Define available devices
+DEVICES=("device1" "device2" "device3" "device4" "device5")
+
+# Calculate end time (current time + 30 minutes)
+END_TIME=$((SECONDS + 1800))
+
 # Generate and send encrypted telemetry data
-while true; do
+while [[ $SECONDS -lt $END_TIME ]]; do
+    # Pick a random device
+    device=${DEVICES[$((RANDOM % ${#DEVICES[@]}))]}
+
     # Pick a random line from the file
     line=$(shuf -n 1 $PATIENTS_FILE)
 
@@ -36,7 +47,7 @@ while true; do
     # Create JSON payload
     json_data=$(cat <<EOF
 {
-    "device_id": "device1",
+    "device_id": "$device",
     "patient_name": "$name",
     "patient_id": "$patient_id",
     "heart_rate": $heart_rate,
@@ -67,3 +78,5 @@ EOF
     # Wait before sending the next message
     sleep 1
 done
+
+echo "Telemetry generation completed after 30 minutes."
