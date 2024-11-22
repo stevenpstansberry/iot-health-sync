@@ -6,7 +6,6 @@ from analysis.alert_escalation import alert_escalation
 
 if __name__ == "__main__":
     print("\n--- Patient-Level Notifications ---")
-    patient_notifications("Xsu5hUsKlrQnAWLcH+UnKA==")
 
     print("\n--- Priority Patient List ---")
     priority_patient_list()

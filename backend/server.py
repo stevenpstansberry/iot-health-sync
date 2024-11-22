@@ -7,9 +7,14 @@ from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
 from datetime import datetime, timezone
 import uuid
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv(dotenv_path='../.env')
 
 # Encryption configuration
-encryption_key = bytes.fromhex("63663255767434797a59587252423657697151594131474749705a4766387644")  # Hex-encoded key
+encryption_key = bytes.fromhex(os.getenv("ENCRYPTION_KEY"))  # Hex-encoded key
 
 # Kafka Configuration
 KAFKA_BROKER = 'localhost:9092'

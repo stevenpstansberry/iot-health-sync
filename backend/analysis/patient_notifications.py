@@ -2,9 +2,14 @@ import redis_client
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 import base64
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from the .env file two directories up
+load_dotenv(dotenv_path='../../.env')
 
 # Decryption utility 
-encryption_key = bytes.fromhex("63663255767434797a59587252423657697151594131474749705a4766387644")  # 32 bytes (256-bit key)
+encryption_key = bytes.fromhex(os.getenv("ENCRYPTION_KEY"))  # 32 bytes (256-bit key)
 
 def decrypt_patient_id(encrypted_id):
     cipher = AES.new(encryption_key, AES.MODE_ECB)
@@ -27,4 +32,3 @@ def patient_notifications(encrypted_patient_id):
             print(f"  {anomaly_type} at {timestamp}: {value}")
         except ValueError:
             print(f"  Malformed anomaly key: {anomaly} -> {value}")
-
