@@ -1,9 +1,9 @@
-# **IoT HealthSync**
+# **IoT Health Sync**
 ## Overview
 
 
- Welcome to **IoT HealthSync**! This project implements a secure and scalable data pipeline for processing mock IoT telemetry data in a healthcare enviornment. It focuses on encryption, anomaly detection for patients, and compliance with standards like **HIPAA**. 
- **Kafka** serves as the real-time message broker for telemetry ingestion, while **Redis** is used for fast, real-time anomaly logging and alerting. A **Lambda function** automates data cleaning and compliance enforcement by removing PII from encrypted data before long-term storage in **S3**.
+**IoT Health Sync** is a secure and scalable pipeline designed for processing IoT telemetry data in healthcare environments. It focuses on real-time anomaly detection, data encryption, and compliance with standards like **HIPAA**, leveraging **AWS services** (S3, Lambda, IAM), **Kafka**, and **Redis** to ensure efficient and compliant data handling.
+
 
 ### Compliance and Security
 This pipeline is designed to adhere to **HIPAA (Health Insurance Portability and Accountability Act)** requirements, ensuring the secure handling and storage of sensitive health data through:
