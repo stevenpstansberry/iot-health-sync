@@ -30,9 +30,9 @@ This pipeline is designed to adhere to **HIPAA (Health Insurance Portability and
 
 ## Pipeline Architecture
 
-<p align="center">
-  <img src="./images/iot-pipeline.png" alt="IoT Pipeline" width="100%">
-</p>
+![IoT Pipeline](./images/iot-pipeline.png)
+
+[Click here to view the full-sized diagram](./images/iot-pipeline.png)
 
 ---
 
