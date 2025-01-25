@@ -1,33 +1,58 @@
-# IoT Health Sync
+# **IoT HealthSync**
+## Overview
+
+
+ Welcome to **IoT HealthSync**! This project implements a secure and scalable data pipeline for processing mock IoT telemetry data in a healthcare enviornment. It focuses on encryption, anomaly detection for patients, and compliance with standards like **HIPAA**. 
+ **Kafka** serves as the real-time message broker for telemetry ingestion, while **Redis** is used for fast, real-time anomaly logging and alerting. A **Lambda function** automates data cleaning and compliance enforcement by removing PII from encrypted data before long-term storage in **S3**.
+
+### Compliance and Security
+This pipeline is designed to adhere to **HIPAA (Health Insurance Portability and Accountability Act)** requirements, ensuring the secure handling and storage of sensitive health data through:
+- **End-to-end encryption** of data at rest and in-transit.
+- **PII stripping** using AWS Lambda for compliance before long-term storage.
+- **Access control**
+    - **IAM (Identity and Access Management)** policies and roles enforce secure and granular access to AWS resources.
+    - **VPC (Virtual Private Cloud)** ensures secure network isolation for Kafka brokers, Redis, and other resources.
+    - **S3 Bucket Policies** allow for more granular restricton to S3 buckets.
+
+
+## Core Technology Stack
+![AWS S3](https://img.shields.io/badge/AWS_S3-569A31?style=flat&logo=amazonaws&logoColor=white)
+![AWS Lambda](https://img.shields.io/badge/AWS_Lambda-FF9900?style=flat&logo=awslambda&logoColor=white)
+![Kafka](https://img.shields.io/badge/Kafka-231F20?style=flat&logo=apachekafka&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white)
+![IAM](https://img.shields.io/badge/AWS_IAM-232F3E?style=flat&logo=amazonaws&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat&logo=springboot&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black)
+![Bash](https://img.shields.io/badge/Bash-4EAA25?style=flat&logo=gnubash&logoColor=white)
+
+---
+
+## Pipeline Architecture
+
+<p align="center">
+  <img src="./images/iot-pipeline.png" alt="IoT Pipeline" width="100%">
+</p>
+
+---
+
 
 ## Table of Contents
-1. [Objective](#objective)
-2. [Key Features](#key-features)
+1. [Key Features](#key-features)
     - [Real-Time Data Pipeline](#real-time-data-pipeline)
     - [Interoperability](#interoperability)
     - [Linux-Based Simulation and Monitoring](#linux-based-simulation-and-monitoring)
-    - [AWS-Orchestrated Secure Networking](#aws-orchestrated-secure-networking)
     - [Fast Data Access and Archiving](#fast-data-access-and-archiving)
-    - [System Health Monitoring](#system-health-monitoring)
-3. [Architecture Overview](#architecture-overview)
-    - [IoT Devices](#iot-devices)
-    - [Networking Layer](#networking-layer)
+2. [Architecture Overview](#architecture-overview)
+    - [IoT Devices and Data Ingestion](#iot-devices-and-data-ingestion)
+    - [Data Pipeline and Processing](#data-pipeline-and-processing)
     - [Data Pipeline](#data-pipeline)
     - [Data Storage](#data-storage)
     - [Compute Orchestration](#compute-orchestration)
-    - [APIs](#apis)
-    - [System Monitoring](#system-monitoring)
     - [Security](#security)
-4. [Workflow](#workflow)
-5. [Technologies Used](#technologies-used)
+3. [Detailed Tech Stack](#detailed-tech-stack)
 
----
 
-## Objective
-
-This project focuses on designing and deploying a scalable, secure IoT system for real-time monitoring of patient vitals such as heart rate, oxygen saturation, and temperature. The system incorporates Kafka for data ingestion, Redis for low-latency storage, AWS Lambda functions and EC2 for compute orchestration, and Amazon S3 for secure data archiving. Enhanced with Linux-based tools, VPC for network isolation, and IAM roles for fine-grained access control, it adheres to FHIR standards for healthcare interoperability and demonstrates proficiency in IoT systems, cloud orchestration, and system-level monitoring.
-
----
 
 ## Key Features
 
@@ -36,88 +61,58 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 - Detects anomalies in patient vitals (e.g., oxygen levels dropping below safe thresholds).
 
 ### Interoperability
-- Formats telemetry data into FHIR-compliant JSON for integration with healthcare systems like EHRs (Electronic Health Records).
+- Formats telemetry data into HIPAA/FHIR-compliant JSON for integration with healthcare systems like EHRs (Electronic Health Records).
 
 ### Linux-Based Simulation and Monitoring
 - Utilizes Linux Bash scripts and netcat for IoT device simulation, sending telemetry via TCP sockets.
 - Monitors Kafka, Redis, and network traffic with Linux tools such as `tcpdump`, `htop`, and `netstat`.
 
-### AWS-Orchestrated Secure Networking
-- AWS Lambda functions trigger the orchestration of compute jobs on EC2 instances for processing heavy workloads.
-- Employs VPC (Virtual Private Cloud) to ensure secure network isolation for Kafka brokers, Redis, and other resources.
-- Implements IAM (Identity and Access Management) roles to enforce secure and granular access to AWS resources.
-
 ### Fast Data Access and Archiving
 - Leverages Redis for caching recent vitals and Amazon S3 for archiving historical data.
 - Employs AWS S3 Lambda Access Points to strip PII from data before long-term storage.
-
-### System Health Monitoring
-- CloudWatch monitors system metrics and application logs.
 
 ---
 
 ## Architecture Overview
 
-### IoT Devices
-- Simulated devices (via Linux scripts) send patient vitals (e.g., heart rate, oxygen saturation) over TCP sockets.
+This project implements a secure and scalable pipeline for processing IoT telemetry data with an emphasis on encryption, anomaly detection, and compliance.
 
-### Networking Layer
-- A Python socket server validates telemetry and forwards data to Kafka topics for processing.
+### IoT Devices and Data Ingestion
+- Simulated IoT devices (via Linux scripts) generate telemetry data (e.g., heart rate, oxygen saturation) and send it over TCP sockets.
+- A Python-based socket server validates the data and forwards it to Kafka topics for real-time processing.
 
-### Data Pipeline
-- Kafka Streams processes incoming data for:
-  - Anomaly detection.
-  - Formatting telemetry into FHIR/HIPAA-compliant JSON.
-- Anomalies are flagged and forwarded to Redis.
+### Data Pipeline and Processing
+- **Kafka Streams** processes incoming data for:
+  - Detecting anomalies in telemetry.
+  - Formatting data into FHIR/HIPAA-compliant JSON.
+- Anomalies are flagged and cached in **Redis** for real-time alerts and dashboards.
 
 ### Data Storage
-- **Redis**: Caches live patient vitals for quick dashboard access.
-- **Amazon S3**: Archives historical data for compliance and analytics with AES-256 encryption for data at rest.
+- **Redis**: Caches live patient vitals and anomaly alerts for quick retrieval.
+- **Amazon S3**:
+  - **Raw Data Bucket**: Temporarily stores raw encrypted telemetry data.
+  - **Processed Data Bucket**: Stores cleaned, PII-free data for long-term archival and analytics. Both buckets use AES-256 encryption for data at rest.
 
-### Compute Orchestration
-- AWS Lambda functions initiate and manage processing jobs on EC2 instances to handle intensive workloads like real-time anomaly detection and data formatting.
+### Event-Triggered Lambda Functions
+- AWS Lambda functions are triggered by S3 uploads:
+  - **Raw Data Processing**: Decrypts, cleans, and removes PII from incoming data.
+  - **Processed Data Storage**: Sanitized data is forwarded to the processed S3 bucket.
 
-### APIs
-- Backend services expose:
-  - REST APIs for real-time and historical data retrieval.
-
-### System Monitoring
-- Linux tools (`tcpdump`, `netstat`) and AWS CloudWatch debug and optimize networking and data flow.
+### Compute and Orchestration
+- **EC2 Instances**: Handle compute-intensive tasks such as generating patient trends and real-time alerts.
+- **AWS Lambda**: Automates compliance checks and PII removal during S3 data processing.
 
 ### Security
-- SSL/TLS encryption ensures secure data transfer with AES-256 encryption applied to transmitted data.
-- Firewalls (`iptables`) restrict access to Kafka and Redis.
-- Data at rest in both Redis and Amazon S3 is encrypted using AES-256, ensuring compliance with industry security standards.
+- **Data in Transit**: All communications are encrypted using SSL/TLS with AES-256.
+- **Data at Rest**: Both Redis and S3 use AES-256 encryption to secure stored sensitive data.
+- **Firewalls**: Tools like `iptables` restrict access to Kafka and Redis, ensuring secure network boundaries.
+
+### Monitoring and Debugging
+- **Linux tools** (`tcpdump`, `htop`, `netstat`) and **AWS CloudWatch** are used to monitor system performance, debug networking, and optimize data flow.
 
 ---
 
-## Workflow
-
-### IoT Simulation
-- Linux scripts simulate telemetry data (e.g., `heart_rate=78, oxygen=95%`) alongside patient information and transmit it via TCP sockets.
-
-### Data Ingestion
-- A Python-based backend socket server validates data and forwards it to Kafka topics.
-- Kafka Streams detects anomalies and formats data into FHIR/HIPAA-compliant JSON.
-
-### Compute and Job Orchestration
-- AWS Lambda functions trigger EC2 instances for compute-intensive tasks, such as:
-  - Processing Kafka Stream output.
-  - Generating patient trends and real-time alerts.
-
-### Data Storage
-- Redis caches real-time data and anomalies before forwarding to Amazon S3 for long-term archiving.
-
-### Data Encryption
-- **Data in Transit**: Secured with SSL/TLS, ensuring that all communication between IoT devices, the backend, and storage is encrypted using the AES-256 algorithm.
-- **Data at Rest**: Redis and Amazon S3 use AES-256 encryption to protect sensitive information stored within the system.
-
-### System Monitoring
-- Linux tools (`tcpdump`, `htop`) and AWS CloudWatch monitor system performance and debug potential bottlenecks.
-
----
-
-## Technologies Used
+## Detailed Tech Stack
 
 ### IoT Simulation
 - Linux Bash scripts, `netcat`, and cron jobs for periodic data generation.
@@ -130,21 +125,12 @@ This project focuses on designing and deploying a scalable, secure IoT system fo
 
 ### Storage
 - Redis for low-latency access to anomalies and Amazon S3 for long-term archiving.
-
 - The S3 Lambda Access Point ensures that data stripped of PII is archived in compliance with privacy regulations.
 
 ### Compute Orchestration
 - AWS Lambda functions to trigger job execution on EC2 instances for scalability and efficiency.
 
-### Backend
-- Spring Boot for REST APIs and cron job orchestration.
-
 ### Security and Encryption
 - AES-256 encryption for data at rest and in transit.
 - SSL/TLS protocols for secure communication.
 - IAM roles for secure access control to AWS resources.
-
-### System Monitoring
-- Linux tools (`tcpdump`, `netstat`, `htop`) and AWS CloudWatch.
-
----
