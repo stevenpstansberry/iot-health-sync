@@ -116,7 +116,6 @@ def process_telemetry(telemetry):
         field_name = f"hypothermia:{timestamp}"
         redis_client.hset(redis_key, field_name, telemetry["temperature"])
 
-    # Optional: Set TTL to automatically remove old data
     redis_client.expire(redis_key, 3600)  # Expire after 1 hour
 
 print(f"Subscribed to Kafka topic: {KAFKA_TOPIC}")
